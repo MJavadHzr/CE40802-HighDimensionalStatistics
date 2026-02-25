@@ -1,0 +1,516 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{fancyhdr}
+% \usepackage{lastpage}
+\usepackage{setspace}
+\usepackage{hyperref}
+
+% --- Custom Commands ---
+\newcommand{\studentname}{Javad Hezareh}
+\newcommand{\studentid}{404208723}
+\newcommand{\coursename}{High Dimensional Statistics}
+\newcommand{\hwnumber}{1}
+
+% --- Header & Footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textbf{Course:} \coursename}
+\rhead{\textbf{Homework \#\hwnumber}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+
+
+
+% --- Title ---
+\title{
+    \vspace{-1.5cm}
+    \rule{\textwidth}{2pt}
+    \vspace{.6cm}
+    \textbf{\coursename}\\[2pt]
+    \textbf{Homework \hwnumber}\\[8pt]
+    \large{\studentname\ (\studentid)}\\[4pt]
+    \normalsize{Fall 2025 (1404)}\\[6pt]
+    % \rule{\textwidth}{}
+    \hrule
+}
+\date{}
+
+% \onehalfspacing
+% --- Document ---
+\begin{document}
+
+\maketitle
+\vspace{-1.75cm}
+\section*{Problem 1}
+Let us define $S := \frac{\partial}{\partial \theta} \log f(X;\theta)$ where $f(X, \theta)$ is the distribution of the data $X$ given our model parameter $\theta$. For the expectation of the $S$ with respect to $X$ we have:
+\begin{align*}
+    \mathbb{E}_X[S] &= \mathbb{E}_X\left[\frac{\partial}{\partial \theta} \log f(X;\theta)\right] \\
+    &= \int \frac{\partial}{\partial \theta} \log f(X;\theta) f(X;\theta) dX \\
+    &= \int \frac{1}{f(X;\theta)} \frac{\partial}{\partial \theta} f(X;\theta) f(X;\theta) dX \\
+    &= \int \frac{\partial}{\partial \theta} f(X;\theta) dX \\
+    &= \frac{\partial}{\partial \theta} \int f(X;\theta) dX \\
+    &= \frac{\partial}{\partial \theta} 1 = 0
+\end{align*}
+In other words the Fisher information or $I(\theta)$ can be written as:
+\begin{align*}
+    I(\theta)
+    &= \mathbb{E}_X\left[\left(\frac{\partial}{\partial \theta} \log f(X;\theta)\right)^2\right] \\
+    &= \mathbb{E}_X\left[(S-\mathbb{E}[S])^2\right] \\
+    &= \text{Var}(S)
+\end{align*}
+Now from Cauchy-Schwarz inequality we know that:
+\begin{align*}
+    \left(\text{Cov}(X, Y)\right)^2 &\leq \text{Var}(X) \text{Var}(Y)
+\end{align*}
+We can use this inequality to bound the variance of our estimator $T=t(X)$. In other words we have:
+\begin{align*}
+    \left(\text{Cov}(T, S)\right)^2 &\leq \text{Var}(T) \text{Var}(S) \\
+    \Rightarrow \text{Var}(T) &\geq \frac{\left(\text{Cov}(T, S)\right)^2}{\text{Var}(S)} \quad\quad (\text{Var}(S) > 0)\\
+    &= \frac{\left(\text{Cov}(T, S)\right)^2}{I(\theta)} \\
+\end{align*}
+Now we need to compute $\text{Cov}(T, S)$:
+\begin{align*}
+    \text{Cov}(T, S)
+    % &= \mathbb{E}[(T - \mathbb{E}[T])(S - \mathbb{E}[S])] \\
+    &= \mathbb{E}[T S] - \mathbb{E}[T] \mathbb{E}[S] \\
+    &= \mathbb{E}[T S] \quad \text{(since } \mathbb{E}[S] = 0\text{)} \\
+    &= \mathbb{E}\left[T \frac{\partial}{\partial \theta} \log f(X;\theta)\right] \\
+    &= \int t(X) \frac{\partial}{\partial \theta} \log f(X;\theta) f(X;\theta) dX \\
+    &= \int t(X) \frac{1}{f(X;\theta)} \frac{\partial}{\partial \theta} f(X;\theta) f(X;\theta) dX \\
+    &= \int t(X) \frac{\partial}{\partial \theta} f(X;\theta) dX \\
+    &= \frac{\partial}{\partial \theta} \int t(X) f(X;\theta) dX \\
+    &= \frac{\partial}{\partial \theta} \mathbb{E}[T] = \psi^{\prime}(\theta)\\
+\end{align*}
+Putting it all together we have:
+\begin{align*}
+    \text{Var}(T) &\geq \frac{\left(\psi^{\prime}(\theta)\right)^2}{I(\theta)}
+\end{align*}
+
+\newpage
+\section*{Problem 2}
+For a vector $X$ the maximization of $\theta^TX$ under the constraint $\|\theta\|_2 \le 1$ is equal to $\|X\|_2$. To see this, we can use the Cauchy-Schwarz inequality as follows:
+\begin{align*}
+    \theta^T X &\le \|\theta\|_2 \|X\|_2 \\
+    &\le 1 \cdot \|X\|_2 \quad (\|\theta\|_2 \le 1) \\
+    &= \|X\|_2
+\end{align*}
+The equality holds when $\theta$ is in the same direction as $X$ and has unit norm. Therefore we can write:
+\[
+    \max_{\|\theta\|_2 \le 1} \theta^T X = \|X\|_2
+\]
+The same thing happens for $\max_{\|\theta\|_2 \le 1} |\theta^T X|$. To find an upper bound for this value, we can use $\epsilon$-net over the unit sphere in $\mathbb{R}^d$. Let's denote this $\epsilon$-net by $\mathcal{N}_\epsilon$. We know for any vector $\theta$ with $\|\theta\|_2 \le 1$, there exists a vector $\theta' \in \mathcal{N}_\epsilon$ such that $\|\theta - \theta'\|_2 \le \epsilon$. Therefore we can write:
+\begin{align*}
+    \theta^T X
+    &= (\theta' + (\theta - \theta'))^T X \\
+    &= \theta'^T X + (\theta - \theta')^T X \\
+    % &\le \max_{\theta' \in \mathcal{N}_\epsilon} |\theta'^T X| + \|\theta - \theta'\|_2 \|X\|_2 && (\text{Cauchy-Schwarz inequality}) \\
+    &\le \theta'^T X + \epsilon \|X\|_2
+\end{align*}
+This inequality holds for any $\theta$ with $\|\theta\|_2 \le 1$. Therefore it holds for the maximum of both sides:
+\begin{align*}
+\max_{\|\theta\|_2 \le 1} \theta^T X & \le \max_{\theta' \in \mathcal{N}_\epsilon} \theta'^T X + \epsilon \|X\|_2 \\
+\implies \|X\|_2 & \le \max_{\theta' \in \mathcal{N}_\epsilon} \theta'^T X + \epsilon \|X\|_2 \\
+\implies (1-\epsilon) \|X\|_2 &\le \max_{\theta' \in \mathcal{N}_\epsilon} \theta'^T X \\
+\implies \|X\|_2 &\le \frac{1}{1-\epsilon} \max_{\theta' \in \mathcal{N}_\epsilon} \theta'^T X
+\end{align*}
+Therefore for $\lambda > 0$ and $\epsilon = 1/2$ we have:
+\begin{align*}
+    e^{\lambda\mathbb{E}[\|X\|_2]}
+    &\le \mathbb{E}\left[e^{\lambda \|X\|_2}\right] && (\text{Jensen's ineqaulity}) \\
+    &\le \mathbb{E}\left[e^{\frac{\lambda}{1-1/2} \max_{\theta' \in \mathcal{N}_{1/2}} \theta'^T X}\right] \\
+    &= \mathbb{E}\left[\max_{\theta' \in \mathcal{N}_{1/2}} e^{2\lambda \theta'^T X}\right] \\
+    &\le \mathbb{E}\left[\sum_{\theta' \in \mathcal{N}_{1/2}} e^{2\lambda \theta'^T X}\right] && \left(0\le\alpha_t \implies \max_t \alpha_t \le \sum_t \alpha_t \right)\\
+    &= \sum_{\theta' \in \mathcal{N}_{1/2}} \mathbb{E}\left[e^{2\lambda \theta'^T X}\right] \\
+    &\le \sum_{\theta' \in \mathcal{N}_{1/2}} e^{2\lambda^2\sigma^2} && (\theta'^T X \sim \text{SubG}(\sigma)) \\
+    &\le (1+4)^d e^{2\lambda^2\sigma^2} && \left(|\mathcal{N}_{1/2}| \le (1 + 2/\epsilon)^d\right) \\
+\end{align*}
+Taking the logarithm of both sides we have:
+\begin{align*}
+    \lambda \mathbb{E}[\|X\|_2]
+    &\le d \log(5) + 2\lambda^2 \sigma^2 \\
+    \Rightarrow \mathbb{E}[\|X\|_2]
+    &\le \frac{d \log(5)}{\lambda} + 2\lambda \sigma^2
+\end{align*}
+To get the tightest bound, we can minimize the right-hand side with respect to $\lambda$:
+\begin{align*}
+    -\frac{d \log(5)}{\lambda^2} + 2 \sigma^2 &= 0 \\
+    \Rightarrow \lambda^2 &= \frac{d \log(5)}{2 \sigma^2} \\
+    \Rightarrow \lambda &= \sqrt{\frac{d \log(5)}{2 \sigma^2}} \quad\quad (\lambda > 0)
+\end{align*}
+Plugging this value of $\lambda$ back into the inequality we get:
+\begin{align*}
+    \mathbb{E}[\|X\|_2]
+    &\le \frac{d \log(5)}{\sqrt{\frac{d \log(5)}{2 \sigma^2}}} + 2 \sigma^2 \sqrt{\frac{d \log(5)}{2 \sigma^2}} \\
+    &= \sqrt{8 \sigma^2 d \log(5)} \\
+    &\le 4\sigma\sqrt{d} && (\sqrt{8\log(5)} \approx 3.59 < 4)
+\end{align*}
+To show a high-probability bound for $\|X\|_2$, we consider $\epsilon = 1/2$ then we ahve:
+\[
+\|X\|_2 \le 2\max_{\theta' \in \mathcal{N}_\epsilon} \theta'^T X
+\]
+Therefore if we know $\|X\|_2 \ge \alpha$ then we would have $2\max_{\theta' \in \mathcal{N}_\epsilon} \theta'^T X \ge \alpha$ or $\max_{\theta' \in \mathcal{N}_\epsilon} \theta'^T X \ge \alpha/2$. Thus we can write:
+\begin{align*}
+    \mathbb{P}\left(\|X\|_2\ge \alpha\right) 
+    &\le \mathbb{P}\left(\max_{\theta' \in \mathcal{N}_\epsilon} \theta'^T X \ge \alpha/2\right) \\
+    &= \mathbb{P}\left(\bigcup_{\theta' \in \mathcal{N}_\epsilon} \theta'^T X \ge \alpha/2\right) \\
+    &\le \sum_{\theta' \in \mathcal{N}_\epsilon} \mathbb{P}\left(\theta'^T X \ge \alpha/2\right) \\
+    &\le \sum_{\theta' \in \mathcal{N}_\epsilon} e^{-\frac{\alpha^2}{8\sigma^2}} && (\theta'^T X \sim \text{SubG}(\sigma)) \\
+    &\le (1+4)^d e^{-\frac{\alpha^2}{8\sigma^2}} \\
+\end{align*}
+Setting the right-hand side to $\delta$ and solving for $\alpha$ we have:
+\begin{align*}
+    \delta &= 5^d e^{-\frac{\alpha^2}{8\sigma^2}} \\
+    \Rightarrow \frac{\alpha^2}{8\sigma^2} &= \log\left(\frac{5^d}{\delta}\right) \\
+    \Rightarrow \alpha &= \sigma \sqrt{8 \log\left(\frac{5^d}{\delta}\right)}
+\end{align*}
+Thus we have:
+\begin{align*}
+    \mathbb{P}\left(\|X\|_2 \ge \sigma \sqrt{8 \log\left(\frac{5^d}{\delta}\right)}\right) & \le \delta \\
+    \implies \mathbb{P}\left(\|X\|_2 \le \sigma \sqrt{8 \log\left(\frac{5^d}{\delta}\right)}\right) & \ge 1 - \delta \\
+    \implies \mathbb{P}\left(\|X\|_2 \le \sigma\sqrt{8d\log{5}+8\log(1/\delta)}\right) & \ge 1 - \delta \\
+    \implies \mathbb{P}\left(\|X\|_2 \le \sigma\sqrt{8d\log{5}}+\sigma\sqrt{8\log(1/\delta)}\right) & \ge 1 - \delta && (\sqrt{a+b} \le \sqrt{a}+\sqrt{b}, a,b \ge 0) \\
+    \implies \mathbb{P}\left(\|X\|_2 \le 4\sigma\sqrt{d}+2\sigma\sqrt{2\log(1/\delta)}\right) & \ge 1 - \delta && (\sqrt{8\log{5}} < 4)
+\end{align*}
+
+\newpage
+\section*{Problem 3}
+We first show for the exponential function we have:
+\[
+    e^x \le 1 + x + \frac{x^2/2}{1 - |x|/3} \quad \text{for\;\;} |x| < 3
+\]
+To show this, we expand the exponential function as a Taylor series around $0$:
+\begin{align*}
+    e^x 
+    &= \sum_{n=0}^{\infty} \frac{x^n}{n!} = 1 + x + \frac{x^2}{2} + \frac{x^3}{3!} + \frac{x^4}{4!} + \cdots \\
+    &= 1 + x + \frac{x^2}{2}\left(1 + \frac{x}{3} + \frac{x^2}{3\times 4} + \cdots\right) \\
+    &\le 1 + x + \frac{x^2}{2}\left(1 + \frac{|x|}{3} + \frac{|x|^2}{3\times 4} + \cdots\right) \\
+    &\le 1 + x + \frac{x^2}{2}\left(1 + \frac{|x|}{3} + \left(\frac{|x|}{3}\right)^2 + \cdots\right) \quad \text{for\;\;} |x| < 3 \\
+    &= 1 + x + \frac{x^2}{2}\left(\frac{1}{1-|x|/3}\right) \quad \text{for\;\;} |x| < 3
+\end{align*}
+Now we use our assumptions about the provided random variable $X$ to bound its moment generating function (MGF). Let's set $|\lambda| < \frac{3}{K}$, then we have:
+\[
+\left.\begin{aligned}
+    |X| \le K \\
+    |\lambda| < \frac{3}{K}
+\end{aligned}\right\}\Rightarrow |\lambda X| < 3
+\]
+Then we can use the previous result to bound the MGF of $X$ as follows:
+\begin{align*}
+    \mathbb{E}[e^{\lambda X}]
+    &\le \mathbb{E}\left[1 + \lambda X + \frac{(\lambda X)^2/2}{1 - |\lambda X|/3}\right] \\
+    &= 1 + \lambda \mathbb{E}[X] + \mathbb{E}\left[\frac{\lambda^2X^2/2}{1 - |\lambda X|/3}\right] \\
+    &= 1 + 0 + \mathbb{E}\left[\frac{\lambda^2X^2/2}{1 - |\lambda X|/3}\right] && (\mathbb{E}[X] = 0) \\
+    &\le 1 + \mathbb{E}\left[\frac{\lambda^2X^2/2}{1 - |\lambda| K/3}\right] && (|X| \le K) \\
+    &= 1 + \frac{\lambda^2/2}{1 - |\lambda| K/3} \mathbb{E}[X^2] \\
+    &\le \exp\left(\frac{\lambda^2/2}{1 - |\lambda| K/3}\mathbb{E}[X^2]\right) && (1 + x \le e^x) \\
+\end{align*}
+
+\newpage
+\section*{Problem 4}
+We first show that the L$^p$ norm of a random variable is not less than the L$^2$ norm of that. In other words for a random variable $X$ and $p \ge 2$ and using the definition of the L$^p$ norm we have:
+\[
+    \left(\mathbb{E}[|X|^p]\right)^{1/p} \ge \left(\mathbb{E}[|X|^2]\right)^{1/2}
+\]
+Let's define a new random variable $Y = |X|^2$ and $r:= p/2$. Now we can use Jensen's inequality since the function $f(x) = x^r$ is convex for $r \ge 1$ and $x \ge 0$. Thus we have:
+\begin{align*}
+    \left(\mathbb{E}[|X|^p]\right)^{1/p}
+    &= \left(\mathbb{E}[Y^r]\right)^{1/p} \\
+    &\ge \left(\mathbb{E}[Y]\right)^{r/p} && \text{(Jensen's inequality)} \\
+    &= \left(\mathbb{E}[|X|^2]\right)^{(p/2)/p} \\
+    &= \left(\mathbb{E}[|X|^2]\right)^{1/2}
+\end{align*}
+Now for the random variable $Z = \sum_{i=1}^{N} a_i X_i$ we can use the previous result to bound its L$^p$ norm as follows:
+\begin{align*}
+    \|Z\|_{L^p}
+    &= \left(\mathbb{E}\left[ \left|\sum_{i=1}^{N} a_i X_i \right|^p\right]\right)^{1/p} \\
+    &\ge \left(\mathbb{E}\left[ \left|\sum_{i=1}^{N} a_i X_i \right|^2\right]\right)^{1/2} && \text{(from previous result)} \\
+    &= \left(\mathbb{E}\left[ \left(\sum_{i=1}^{N} a_i X_i \right)^2\right]\right)^{1/2}  && (|\alpha|^2 = \alpha^2)\\
+    &= \left(\mathbb{E}\left[\sum_{i=1}^{N} a_i^2 X_i^2\right] + \mathbb{E}\left[\sum_{i, j} a_i a_j X_i X_j\right]\right)^{1/2} \\
+    &= \left(\sum_{i=1}^{N} a_i^2 \mathbb{E}[X_i^2] + \sum_{i, j} a_i a_j \mathbb{E}[X_i] \mathbb{E}[X_j]\right)^{1/2} && (\text{independence of } X_i\text{s)} \\
+    &= \left(\sum_{i=1}^{N} a_i^2 \mathbb{E}[X_i^2]\right)^{1/2} && (\mathbb{E}[X_i] = 0) \\
+    &= \left(\sum_{i=1}^{N} a_i^2\right)^{1/2} && (\text{Var}(X_i) = 1)
+\end{align*}
+To show the upper bound, we can use the triangle inequality of the L$^p$ norm as follows:
+\begin{align*}
+    \|Z\|_{L^p}
+    &= \left(\mathbb{E}\left[ \left|\sum_{i=1}^{N} a_i X_i \right|^p\right]\right)^{1/p} \\
+    &\le \sum_{i=1}^{N} |a_i| \left(\mathbb{E}\left[ |X_i|^p\right]\right)^{1/p} && \text{(Triangle inequality)} \\
+    &= \left(\mathbb{E}\left[ |X_1|^p\right]\right)^{1/p} \sum_{i=1}^{N} |a_i| && (\text{identical distribution of } X_i\text{s)} \\
+    &\le \left(\mathbb{E}\left[ |X_1|^p\right]\right)^{1/p} \sqrt{N} \left(\sum_{i=1}^{N} a_i^2\right)^{1/2} && \text{(Cauchy-Schwarz inequality)}
+\end{align*}
+
+\noindent
+Now we show the upper bound of the $L^p$ norm of $Z$. From the definition of the $\psi$-norm of a random variable we can write:
+\[
+\left\|Z\right\|_{L^p} \le C_0\sqrt{p}\left\|Z\right\|_\psi \qquad (\star)
+\]
+And as $X_i$s are Sub-Gaussian random variables, then $Z$ is also a Sub-Gaussian random variable and we have the above inequality holds for it. We also have the following ineqaulity for the $\psi$-norm of the summation of Sub-Gaussian random variables:
+\[
+\left\|\sum_i Y_i\right\|^2_\psi \le C_1 \sum_i\left\|Y_i\right\|^2_\psi
+\]
+And we know $Y_i = a_i X_i$ therefore $\left\|a_iX_i\right\|^2 = a_i^2\left\|X_i\right\|^2_\psi$. Thus we can write:
+\begin{align*}
+    \left\|Z\right\|^2_\psi
+    &= \left\|\sum_{i=1}^{N} a_i X_i\right\|^2_\psi \\
+    &\le C_1 \sum_{i=1}^{N} \left\|a_i X_i\right\|^2_\psi \\
+    &= C_1 \sum_{i=1}^{N} a_i^2 \left\|X_i\right\|^2_\psi \\
+    &\le C_1 \sum_{i=1}^{N} a_i^2 K^2 && (K = \max_i \left\|X_i\right\|_\psi) \\
+    &= C_1 K^2 \sum_{i=1}^{N} a_i^2
+\end{align*}
+Now using $(\star)$ we can write:
+\begin{align*}
+    \left\|Z\right\|_{L^p}
+    &\le C_0 \sqrt{p} \left\|Z\right\|_\psi \\
+    &\le C_0 \sqrt{p} \sqrt{C_1 K^2 \sum_{i=1}^{N} a_i^2} \\
+    &= C_0 K \sqrt{C_1 p} \left(\sum_{i=1}^{N} a_i^2\right)^{1/2} = CK\sqrt{p}\left(\sum_{i=1}^{N} a_i^2\right)^{1/2}
+\end{align*}
+
+\newpage
+\section*{Problem 5}
+We assume $X_1, \ldots, X_n$ are zero-mean Sub-Gaussian random variables.
+\begin{itemize}
+    \item[(a)]
+    As the exponential function is increasing, we can write:
+    \[
+    e^{\lambda Z} = e^{\lambda \max_t X_t} = \max_t e^{\lambda X_t}
+    \]
+    Now for the MGF of $Z$ we have:
+    \begin{align*}
+        \mathbb{E}[e^{\lambda Z}]
+        &= \mathbb{E}[\max_t e^{\lambda X_t}] \\
+        &\le \mathbb{E}\left[\sum_{t=1}^{n} e^{\lambda X_t}\right] && \left(0\le\alpha_t \implies \max_t \alpha_t \le \sum_t \alpha_t \right)\\
+        &= \sum_{t=1}^{n} \mathbb{E}[e^{\lambda X_t}] \\
+        &\le \sum_{t=1}^{n} e^{\lambda^2 \sigma^2/2} && \left(X_i \sim \text{SubG($\sigma$)}, \mathbb{E}(X_i)=0\right) \\
+        &= n e^{\lambda^2 \sigma^2/2}
+    \end{align*}
+    We know $e^{\alpha x}$ is convex for all $\alpha \in \mathbb{R}$. Therefore using Jensen's inequality we have:
+    \begin{align*}
+        e^{\lambda \mathbb{E}[Z]} &\le \mathbb{E}[e^{\lambda Z}] \\
+        &\le n e^{\lambda^2 \sigma^2/2}
+    \end{align*}
+    Now taking the logarithm of both sides we get:
+    \begin{align*}
+        \lambda \mathbb{E}[Z] &\le \log(n) + \frac{\lambda^2 \sigma^2}{2} \\
+        (\lambda \ge 0)\Rightarrow \mathbb{E}[Z] &\le \frac{\log(n)}{\lambda} + \frac{\lambda \sigma^2}{2}
+    \end{align*}
+    We've consider $\lambda \ge 0$. Now we can minimize the right-hand side with respect to $\lambda$ to get the tightest bound. Taking the derivative and setting it to zero we have:
+    \begin{align*}
+        -\frac{\log(n)}{\lambda^2} + \frac{\sigma^2}{2} &= 0 \\
+        \Rightarrow \lambda^2 &= \frac{2\log(n)}{\sigma^2} \\
+        \Rightarrow \lambda &= \sqrt{\frac{2\log(n)}{\sigma^2}} \quad\quad (\lambda \ge 0)
+    \end{align*}
+    Plugging this value of $\lambda$ back into the inequality we get:
+    \begin{align*}
+        \mathbb{E}[Z] &\le \frac{\log(n)}{\sqrt{\frac{2\log(n)}{\sigma^2}}} + \frac{\sigma^2}{2} \sqrt{\frac{2\log(n)}{\sigma^2}} \\
+        &= \sigma \sqrt{2\log(n)}
+    \end{align*}
+
+
+    \item[(b)]
+    We can use Chernoff bound to bound the tail probability of $Z$ as follows:
+    \begin{align*}
+        \mathbb{P}(Z \ge t)
+        &\le \inf_{\lambda > 0} e^{-\lambda t}{\mathbb{E}[e^{\lambda Z}]} \\
+        &\le \inf_{\lambda > 0} n e^{\lambda^2 \sigma^2/2 - \lambda t} && \text{(from part (a))}
+    \end{align*}
+    To find the tightest bound, we minimize the right-hand side with respect to $\lambda$:
+    \begin{align*}
+        n e^{\lambda^2 \sigma^2/2 - \lambda t} (\sigma^2 \lambda - t) &= 0 \\
+        \Rightarrow \sigma^2 \lambda - t &= 0 \\
+        \Rightarrow \lambda &= \frac{t}{\sigma^2} \quad\quad (\lambda > 0)
+    \end{align*}
+    Now for the tail bound we have:
+    \begin{align*}
+        \mathbb{P}(Z \ge t)
+        &\le n e^{\frac{t^2}{2\sigma^2} - \frac{t^2}{\sigma^2}} \\
+        &= n e^{-\frac{t^2}{2\sigma^2}}
+    \end{align*}
+    We can simply rewrite this and set $t=\sqrt{2\sigma^2 \log(n/\delta)}$ to get:
+    \begin{align*}
+        \mathbb{P}\left(Z \ge \sqrt{2\sigma^2 \log\left(\frac{n}{\delta}\right)}\right)
+        &\le n e^{-\log(n/\delta)} \\
+        &= \delta
+    \end{align*}
+\end{itemize}
+
+\newpage
+\section*{Problem 6}
+We define new random variables $Y^i_t = \mathbb{I}(X_t = i)$. Therefore, $Y^i_t$ are Bernoulli random variables with parameter $p_i$. We know $Y_t^i$ are Sub-Gaussian with parameter $1/2$. Using the Hoeffding bound for the average of these random variables we have:
+\begin{align*}
+    \mathbb{P}\left(|\hat{p}_i - p_i|\ge\epsilon\right)
+    &=\mathbb{P}\left(\left|\frac{1}{n} \sum_{t=1}^{n} Y_t^i - p_i\right| \ge \epsilon \right) \\
+    &\le 2 \exp\left(-\frac{n^2 \epsilon^2}{2n(1/2)^2}\right) &&(\text{Hoeffding Bound})\\
+    &= 2 \exp\left(-2 n\epsilon^2\right) &&(\star)\\
+\end{align*}
+For probability vectors like $p$ and $\hat{p}$ we know that:
+\[
+    \|p - \hat{p}\|_\infty \le \alpha \implies \|p-\hat{p}\|_1 \le 2 \alpha
+\]
+Therefore the event of $\|p - \hat{p}\|_\infty \le \alpha$ is a subset of $\|p-\hat{p}\|_1 \le 2 \alpha$ and we can write:
+\[
+\mathbb{P}\left(\|p - \hat{p}\|_\infty \le \alpha\right) \le \mathbb{P}\left(\|p - \hat{p}\|_1 \le 2 \alpha\right)
+\]
+And for the complement event we have:
+\[
+\mathbb{P}\left(\|p - \hat{p}\|_1 \ge 2\alpha\right) \le \mathbb{P}\left(\|p - \hat{p}\|_\infty \ge \alpha \right)
+\]
+We cound bound the right-hand side using union bound as follows:
+\begin{align*}
+    \mathbb{P}\left(\|p - \hat{p}\|_\infty \ge \alpha \right)
+    &= \mathbb{P}\left(\max_i |p_i - \hat{p}_i| \ge \alpha \right) \\
+    &= \mathbb{P}\left(\bigcup_{i} |p_i - \hat{p}_i| \ge \alpha \right) \\
+    &\le \sum_{i} \mathbb{P}\left(|p_i - \hat{p}_i| \ge \alpha \right) \\
+    &\le \sum_{i} 2 \exp\left(-2 n\alpha^2\right) && (\text{Using\;}\star)\\
+    &= 2 m \exp\left(-2 n\alpha^2\right)
+\end{align*}
+Therefore for $\epsilon = 2\alpha$ we have:
+\[
+\mathbb{P}\left(\|p - \hat{p}\|_1 \ge \epsilon\right) \le \mathbb{P}\left(\|p - \hat{p}\|_\infty \ge \epsilon/2 \right) \le 2m\exp\left(-n\epsilon^2/2\right)
+\]
+Setting $\delta = 2m\exp\left(-n\epsilon^2/2\right)$ and solving for $\epsilon$ we get:
+\begin{align*}
+    \delta &= 2m\exp\left(-n\epsilon^2/2\right) \\
+    % \Rightarrow \frac{\delta}{2m} &= \exp\left(-n\epsilon^2/2\right) \\
+    % \Rightarrow \log\left(\frac{\delta}{2m}\right) &= -\frac{n\epsilon^2}{2} \\
+    % \Rightarrow \epsilon^2 &= \frac{2}{n} \log\left(\frac{2m}{\delta}\right) \\
+    \Rightarrow \epsilon &= \sqrt{\frac{2}{n} \log\left(\frac{2m}{\delta}\right)}
+\end{align*}
+Therefore we have:
+\[
+    \mathbb{P}\left(\|p - \hat{p}\|_1 \ge \sqrt{\frac{2}{n} \log\left(\frac{2m}{\delta}\right)}\right) \le \delta
+\]
+\newpage
+\section*{Problem 7}
+\begin{itemize}
+    \item[(a)]
+    The Bernoulli random variable is a bounded random variable and $X\in[0, 1]$. As we know bounded random variables are Sub-Gaussian with parameter $(b-a)/2$, we can say that $X$ is Sub-Gaussian with parameter $1/2$.
+    \item[(b), (c)]
+    For these parts, we show the provided $Q(p)$ satisfies the condition for minimum value of $\sigma$. To find the minimum value of $\sigma$ that satisfies the subgaussianity constant we have:
+    \[
+    \log\left(\mathbb{E}(e^{\lambda(X-p)})\right) \le \frac{\sigma^2\lambda^2}{2} \implies \frac{2}{\lambda^2}\log\left(\mathbb{E}(e^{\lambda(X-p)})\right) \le \sigma^2
+    \]
+    To find the minimum value of $\sigma^2$ we should find the supremum value of the left-hand-side of the above inequality. Therefore:
+    \begin{align*}
+        \sigma_{min}^2
+        &= \sup_{\lambda} \frac{2}{\lambda^2}\log\left(\mathbb{E}(e^{\lambda(X-p)})\right)\\ 
+        &= \sup_{\lambda} \frac{2}{\lambda^2}\log\left(pe^{\lambda(1-p)}+(1-p)e^{-\lambda p}\right) \\
+        &= \sup_{\lambda} \frac{2}{\lambda^2} M(\lambda)
+    \end{align*}
+    Where we define $M(\lambda) := \log\left(pe^{\lambda(1-p)}+(1-p)e^{-\lambda p}\right)$. Now for the optimal value $\lambda^\ast \ne 0$ we would have:
+    \[
+    M^\prime(\lambda^\ast) = \frac{2M(\lambda^\ast)}{\lambda^\ast}
+    \]
+    One can easily show this by taking the gradient of our function and setting it to zero.
+    For LHS we have:
+    \begin{align*}
+        M^\prime(\lambda)
+        &= \frac{p(1-p)e^{-\lambda p}(e^\lambda-1)}{e^{-\lambda p}(pe^\lambda + 1 - p)} \\
+        &= \frac{p(1-p)(e^\lambda-1)}{pe^\lambda + 1 - p} \\
+        &= \frac{p(1-p)(t^2 - 1)}{pt^2+1-p}
+    \end{align*}
+    Where we defined $t^2:=e^\lambda$. For the RHS we can write:
+    \begin{align*}
+        \frac{2M(\lambda)}{\lambda}
+        &= \frac{2}{\lambda}\left(\log\left(e^{-\lambda p}(pe^\lambda + 1 - p)\right)\right) \\
+        &= \frac{2}{\lambda}\left[-\lambda p + \log(pe^\lambda + 1 - p)\right] \\
+        &= -2p + \frac{2}{\lambda} \log(pt^2+1-p)
+    \end{align*}
+    Now we have:
+    \begin{align*}
+        & \frac{p(1-p)(t^2 - 1)}{pt^2+1-p} = -2p + \frac{2}{\lambda} \log(pt^2+1-p) \\
+        \implies & \frac{p(1-p)(t^2 - 1)}{pt^2+1-p} + 2p = \frac{2}{\lambda} \log(pt^2+1-p) \\
+        \implies & \frac{(t^2-1)(1+p)p + 2p}{pt^2+1-p} = \frac{2}{\lambda} \log(pt^2+1-p) \\
+        \implies & p\frac{(t^2-1)(1+p) + 2}{pt^2+1-p} = \frac{2}{2\log t} \log(pt^2+1-p) \\
+        \implies & \log(t) \cdot p\frac{(t^2-1)(1+p) + 2}{pt^2+1-p} = \log(pt^2+1-p)
+    \end{align*}
+    One candidate solution for this equation is $t^\ast = (1-p)/p$. One can simply check this would lead to the eqaulity:
+    \begin{align*}
+        p(t^\ast)^2 + 1 - p
+        &= p \frac{1+p^2-2p}{p^2} + 1 - p \\
+        &= \frac{1+p^2-2p}{p} + \frac{p - p^2}{p} \\
+        &= \frac{1-p}{p}
+    \end{align*}
+    \begin{align*}
+        ((t^\ast)^2-1)(1+p) + 2
+        &= \left(\frac{1+p^2-2p}{p^2}-1\right)(1+p)+2 \\
+        &= \frac{1-2p}{p^2}(1+p) + 2 \\
+        &= \frac{1+p-2p-2p^2}{p^2} + \frac{2p^2}{p^2} \\
+        &= \frac{1-p}{p^2}
+    \end{align*}
+    Putting these in our eqaulity we would have:
+    \[
+    \log(t^\ast) \frac{p\frac{1-p}{p^2}}{\frac{1-p}{p}} = \log(t^\ast)\times 1 = \log(p(t^\ast)^2+1-p)
+    \]
+    Therfore we have
+    \[
+    \lambda^\ast = 2\ln t^\ast = 2\ln\left(\frac{1-p}{p}\right).
+    \]
+    Plugging this in our function for $\sigma_{min}^2$ we have:
+    \begin{align*}
+        \sigma_{min}^2
+        &= \frac{2}{{\lambda^\ast}^2} M(\lambda^\ast)\\
+        &= \frac{1}{\left[\ln\left(\frac{1-p}{p}\right)\right]^2}\ln\left(e^{-\lambda^\ast p}(pe^{\lambda^\ast}+1-p)\right) \\
+        &= \frac{1}{\left[\ln\left(\frac{1-p}{p}\right)\right]^2}\left[-\lambda^\ast p + \ln\left(pe^{\lambda^\ast}+1-p\right)\right] \\
+        &= \frac{1}{\left[\ln\left(\frac{1-p}{p}\right)\right]^2} \left[-2p \ln\left(\frac{1-p}{p}\right) + \ln\left(\frac{1-p}{p}\right)\right] \\
+        &= \frac{1-2p}{\ln\left(\frac{1-p}{p}\right)}
+    \end{align*}
+    \item[(d)]
+\end{itemize}
+
+\newpage
+\section*{Problem 8}
+\begin{itemize}
+    \item[(a)]
+    We want to show the output of the \textsc{Naive}$(\epsilon, \delta)$ which is $\max_a \hat{p}_a$ is $(\epsilon, \delta)$-PAC algorithm. In other words we want to show:
+    \[
+    \mathbb{P}\left(\max_a \hat{p}_a - \max_a p_a \ge \epsilon\right) \le \delta
+    \]
+    We know $\forall a\in A$ we have $p_a \le \max_a p_a$. Therefore we can write:
+    \[
+    \mathbb{P}\left(\max_a \hat{p}_a - \max_a p_a \ge \epsilon\right) \le \mathbb{P}\left(\max_a (\hat{p}_a - p_a) \ge \epsilon\right)
+    \] 
+    To bound the right-hand side we can use union bound as follows:
+    \begin{align*}
+        \mathbb{P}\left(\max_a (\hat{p}_a - p_a) \ge \epsilon\right)
+        &= \mathbb{P}\left(\bigcup_{a} (\hat{p}_a - p_a) \ge \epsilon\right) \\
+        &\le \sum_{a} \mathbb{P}\left(\hat{p}_a - p_a \ge \epsilon\right) \\
+        &= \sum_{a} e^{-2m\epsilon^2} && (\text{Hoeffding bound}) \\
+        &= n e^{-2m\epsilon^2} \\
+    \end{align*}
+    We can use the Hoeffding bound since $\hat{p}_a$ is the average of $m$ i.i.d. bounded random variables in $[0, 1]$, thus each of which is Sub-Gaussian with parameter $1/2$. Now setting $\delta = n e^{-2m\epsilon^2}$ and solving for $m$ we get:
+    \begin{align*}
+        \delta &= n e^{-2m\epsilon^2} \\
+        \Rightarrow m &= \frac{1}{2\epsilon^2} \log\left(\frac{n}{\delta}\right)
+    \end{align*}
+    We need $m$ samples per action to have the \textsc{Naive}$(\epsilon, \delta)$ algorithm be $(\epsilon, \delta)$-PAC. Therefore the sample complexity of the algorithm is
+    $O\left(\frac{n}{\epsilon^2} \log\left(\frac{n}{\delta}\right)\right)$
+    
+    \item[(b)]
+    Let's set the output of the algorithm with $\hat{a}$. Then we want to show with low probability this output is different from the optimal solution wich is $a_1$ for this setup. Thus we want to show:
+    \[
+    \mathbb{P}\left(\hat{a}\ne a_1\right) \le \delta
+    \]
+    According to the algorithm, to have this event happen the $a_1$ action should be removed from the set before one of the other actions. In other words:
+    \[
+    \mathbb{P}\left(\hat{a}\ne a_1\right) = \mathbb{P}\left(\bigcup_i E_i\right) \le \sum_i \mathbb{P}\left(E_i\right)
+    \]
+    Where each $E_i$ is the event of removing $a_1$ before $a_i$.
+
+    Determining the sample complexity of the algorithm is straight forward. For each action that gets eliminated at step $i$ we have sampled
+    \[
+    (t_{n}-t_{n+1}) + (t_{n-1}-t_{n}) + \cdots + (t_{n-i}-t_{n-i+1}) = t_{n-i} - t_{n+1} = t_{n-i}
+    \]
+    times. At each step $i$ we eliminate one action therefore till the end of iteration for those actions that were removed we have sampled:
+    \[
+    \sum_{i=0}^{n-2}t_{n-i} = \sum_{i=2}^n t_i = \sum_{i=2}^n \left\lceil \frac{4}{\Delta_i^2}\log\left(\frac{n}{\delta}\right)\right\rceil
+    \]
+    We have also sampled $t_{2}$ times for action $a_1$. Thus the total sample complexity of the algorithm would be:
+    \[
+    t_2 + \sum_{i=2}^nt_i \in O\left(\log\left(\frac{n}{\delta}\right)\sum_{i=2}^n\frac{1}{\Delta_i^2}\right)
+    \]
+\end{itemize}
+
+\label{LastPage}
+\end{document}

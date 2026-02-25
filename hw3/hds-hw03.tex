@@ -1,0 +1,382 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{enumitem}
+% \usepackage{lastpage}
+
+% --- Custom Commands ---
+\newcommand{\studentname}{Javad Hezareh}
+\newcommand{\studentid}{404208723}
+\newcommand{\coursename}{High Dimensional Statistics}
+\newcommand{\hwnumber}{3}
+
+% --- Header & Footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textbf{Course:} \coursename}
+\rhead{\textbf{Homework \#\hwnumber}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+
+
+
+% --- Title ---
+\title{
+    \vspace{-1.5cm}
+    \rule{\textwidth}{2pt}
+    \vspace{.6cm}
+    \textbf{\coursename}\\[2pt]
+    \textbf{Homework \hwnumber}\\[8pt]
+    \large{\studentname\ (\studentid)}\\[4pt]
+    \normalsize{Fall 2025 (1404)}\\[6pt]
+    % \rule{\textwidth}{}
+    \hrule
+}
+\date{}
+
+% \renewcommand{\theenumi}{(\alph{enumi})}
+
+% --- Document ---
+\begin{document}
+
+\maketitle
+\vspace{-1.75cm}
+\section{Mixture distributions and KL divergence}
+Let $p_j$, $q$ and $\bar{q}$ be the probability density functions of $P_j$, $Q$ and $\bar{Q}$ respectively. Then, for the LHS we have:
+\begin{align*}
+    \frac{1}{M} \sum_{j=1}^M D_{KL}(P_j || \bar{Q})
+    &= \frac{1}{M} \sum_{j=1}^M \int p_j(x) \log \frac{p_j(x)}{\bar{q}(x)} dx \\
+\end{align*}
+And for the RHS we have:
+\begin{align*}
+    \frac{1}{M} \sum_{j=1}^M D_{KL}\left(P_j || Q \right)
+    &= \frac{1}{M} \sum_{j=1}^M  \int p_j(x) \log \frac{p_j(x)}{q(x)} dx \\
+\end{align*}
+Now for the difference between the two sides we have:
+\begin{align*}
+    &\frac{1}{M} \sum_{j=1}^M D_{KL}(P_j || \bar{Q}) - \frac{1}{M} \sum_{j=1}^M D_{KL}\left(P_j || Q \right) \\
+    &= \frac{1}{M} \sum_{j=1}^M \int p_j(x) \log \frac{p_j(x)}{\bar{q}(x)} dx - \frac{1}{M} \sum_{j=1}^M  \int p_j(x) \log \frac{p_j(x)}{q(x)} dx \\
+    &= \frac{1}{M} \sum_{j=1}^M \int p_j(x) \left( \log \frac{p_j(x)}{\bar{q}(x)} - \log \frac{p_j(x)}{q(x)} \right) dx \\
+    &= \frac{1}{M} \sum_{j=1}^M \int p_j(x) \log \frac{q(x)}{\bar{q}(x)} dx \\
+    &= \int \left( \frac{1}{M} \sum_{j=1}^M p_j(x) \right) \log \frac{q(x)}{\bar{q}(x)} dx \\
+    &= \int \bar{q}(x) \log \frac{q(x)}{\bar{q}(x)} dx \\
+    &= - D_{KL}(\bar{Q} || Q)
+\end{align*}
+Therefore we have:
+\[
+\frac{1}{M} \sum_{j=1}^M D_{KL}(P_j || \bar{Q}) + D_{KL}(\bar{Q} || Q) = \frac{1}{M} \sum_{j=1}^M D_{KL}\left(P_j || Q \right)
+\]
+And since KL divergence is always non-negative, we have:
+\[
+\frac{1}{M} \sum_{j=1}^M D_{KL}(P_j || \bar{Q}) \leq \frac{1}{M} \sum_{j=1}^M D_{KL}\left(P_j || Q \right)
+\]
+
+\newpage
+\section{$f$-divergences}
+\begin{enumerate}[label=(\alph*)]
+    \item For $f(t) = t\log t$, we have:
+    \begin{align*}
+        D_f(P || Q)
+        &= \int q(x) f\left( \frac{p(x)}{q(x)} \right) dx \\
+        &= \int q(x) \left( \frac{p(x)}{q(x)} \log \frac{p(x)}{q(x)} \right) dx \\
+        &= \int p(x) \log \frac{p(x)}{q(x)} dx \\
+        &= D_{KL}(P || Q)
+    \end{align*}
+
+    \item For $f(t) = -\log t$, we have:
+    \begin{align*}
+        D_f(P || Q)
+        &= \int q(x) f\left( \frac{p(x)}{q(x)} \right) dx \\
+        &= \int q(x) \left( -\log \frac{p(x)}{q(x)} \right) dx \\
+        &= \int q(x) \log \frac{q(x)}{p(x)} dx \\
+        &= D_{KL}(Q || P)
+    \end{align*}
+    \item Part (d) shows that by chossing $f(t) = 1-\sqrt{t}$ we can get Hellinger distance.
+    \item For $f(t) = 1 - \sqrt{t}$, we have: (We define Hellinger distance as $H^2(P || Q) = \frac{1}{2} \int (\sqrt{p(x)} - \sqrt{q(x)})^2 dx$)
+    \begin{align*}
+        D_f(P || Q)
+        &= \int q(x) f\left( \frac{p(x)}{q(x)} \right) dx \\
+        &= \int q(x) \left( 1 - \sqrt{\frac{p(x)}{q(x)}} \right) dx \\
+        &= \int q(x) dx - \int \sqrt{p(x) q(x)} dx \\
+        &= 1 - \int \sqrt{p(x) q(x)} dx \\
+        &= H^2(P || Q)
+    \end{align*}
+\end{enumerate}
+
+\newpage
+\section{}
+We know maximum is greather than or equal to the average, therefore we have:
+\[
+\max_{j=0,1} \mathbb{P}_j(\psi \neq j) \geq \frac{1}{2} \sum_{j=0}^1 \mathbb{P}_j(\psi \neq j)
+\]
+We can write the RHS as follows:
+\[
+\frac{1}{2} \sum_{j=0}^1 \mathbb{P}_j(\psi \neq j) = \mathbb{Q}(\psi \neq J)
+\]
+Where $\mathbb{Q}$ is the measure determining the experiment of chosing a random $j$ uniformly from $\{0,1\}$ and then sampling from $\mathbb{P}_j$. Therefore, we have:
+\[
+\max_{j=0,1} \mathbb{P}_j(\psi \neq j) \geq \mathbb{Q}(\psi \neq J) \ge \inf_{\psi} \mathbb{Q}(\psi \neq J)
+\]
+From course notes we have a lower bound for the infimal term as follows:
+\[
+\inf_{\psi} \mathbb{Q}(\psi \neq J) \ge \frac{1}{2} \left( 1 - \|P_0 - P_1\|_{TV} \right)
+\]
+Now we need to upper bound the total variation distance using KL divergence. From the definition of TV distance we have:
+\begin{align*}
+    \|\mathbb{P}_0 - \mathbb{P}_1\|^2_{TV}
+    &= \frac14\left(\int |p_0 - p_1| dx\right)^2 \\
+    &= \frac14\left(\int | \sqrt{p_0} - \sqrt{p_1} | \cdot | \sqrt{p_0} + \sqrt{p_1} | dx \right)^2 \\
+    & \frac14\leq \left( \int ( \sqrt{p_0} - \sqrt{p_1} )^2 dx \right) \cdot \left( \int ( \sqrt{p_0} + \sqrt{p_1} )^2 dx \right) \\
+    &= \frac14\left( 2 - 2 \int \sqrt{p_0 p_1} dx \right) \cdot \left( 2 + 2 \int \sqrt{p_0 p_1} dx \right) \\
+    &= \left( 1 - \int \sqrt{p_0 p_1} dx \right) \cdot \left( 1 + \int \sqrt{p_0 p_1} dx \right) \\
+    &= 1 - \left( \int \sqrt{p_0 p_1} dx \right)^2
+\end{align*}
+For the integral term we have:
+\begin{align*}
+    \int \sqrt{p_0 p_1} dx
+    &= \int p_0(x) \sqrt{\frac{p_1(x)}{p_0(x)}} dx
+    = \mathbb{E}_{P_0} \left[ \sqrt{\frac{p_1(X)}{p_0(X)}} \right] = \exp\left[\log\left(\mathbb{E}_{P_0} \left[ \sqrt{\frac{p_1(X)}{p_0(X)}} \right]\right)\right]
+\end{align*}
+Using Jensen's inequality we have:
+\begin{align*}
+    \log\left(\mathbb{E}_{P_0} \left[ \sqrt{\frac{p_1(X)}{p_0(X)}} \right]\right) \ge \mathbb{E}_{P_0} \left[ \log \sqrt{\frac{p_1(X)}{p_0(X)}} \right] = \mathbb{E}_{P_0} \left[ \frac12 \log \left(\frac{p_1(X)}{p_0(X)}\right) \right] = -\frac{1}{2} D_{KL}(\mathbb{P}_0 || \mathbb{P}_1)
+\end{align*}
+Thus we have:
+\begin{align*}
+    \int \sqrt{p_0 p_1} dx \ge \exp\left(-\frac{1}{2} D_{KL}(\mathbb{P}_0 || \mathbb{P}_1)\right)
+    \\ \implies \left(\int \sqrt{p_0 p_1} dx\right)^2 \ge \exp\left(- D_{KL}(\mathbb{P}_0 || \mathbb{P}_1)\right)
+\end{align*}
+Putting it all together we have:
+\begin{align*}
+    &\|\mathbb{P}_0 - \mathbb{P}_1\|^2_{TV} \le 1 - \exp\left(- D_{KL}(\mathbb{P}_0 || \mathbb{P}_1)\right) \\[.5em]
+    &\implies 1 - \|\mathbb{P}_0 - \mathbb{P}_1\|^2_{TV} \ge \exp\left(- D_{KL}(\mathbb{P}_0 || \mathbb{P}_1)\right) \\[.5em]
+    &\implies \left(1 - \|\mathbb{P}_0 - \mathbb{P}_1\|_{TV}\right)\left(1 + \|\mathbb{P}_0 - \mathbb{P}_1\|_{TV}\right) \ge \exp\left(- D_{KL}(\mathbb{P}_0 || \mathbb{P}_1)\right) \\[.5em]
+    &\implies 1 - \|\mathbb{P}_0 - \mathbb{P}_1\|_{TV} \ge \frac{\exp\left(- D_{KL}(\mathbb{P}_0 || \mathbb{P}_1)\right)}{1 + \|\mathbb{P}_0 - \mathbb{P}_1\|_{TV}} \\[.5em]
+    &\implies 1 - \|\mathbb{P}_0 - \mathbb{P}_1\|_{TV} \ge \frac{\exp\left(- D_{KL}(\mathbb{P}_0 || \mathbb{P}_1)\right)}{2} \quad \text{(since TV distance is at most 1)} \\[.5em]
+    &\implies \frac{1}{2} \left(1 - \|\mathbb{P}_0 - \mathbb{P}_1\|_{TV}\right) \ge \frac{1}{4} \exp\left(- D_{KL}(\mathbb{P}_0 || \mathbb{P}_1)\right)
+\end{align*}
+Therefore we have:
+\[
+\max_{j=0,1} \mathbb{P}_j(\psi \neq j) \geq \frac{1}{4} \exp\left(- D_{KL}(\mathbb{P}_0 || \mathbb{P}_1)\right)
+\]
+
+\newpage
+\section{Binary Testing and Le Cam Two-Point Method}
+\begin{enumerate}[label=\arabic*.]
+    \item We know the KL divergence between two normal distrubtions $N(\mu, \sigma^2)$ and $N(\nu, \sigma^2)$ is given by:
+    \[
+    D_{KL}(N(\mu, \sigma^2) || N(\nu, \sigma^2)) = \frac{( \mu - \nu )^2}{2\sigma^2}
+    \]
+    From this formula it is clear that the KL divergence for two normal distributions is symmetric. Thus for the densities of this problem we have:
+    \[
+    D_{KL}(N(\delta, 1) || N(-\delta, 1)) = \frac{( \delta - (-\delta) )^2}{2} = \frac{(2\delta)^2}{2} = 2\delta^2
+    \]
+    We also know the KL divergence for $n$ i.i.d. samples is $n$ times the KL divergence for one sample. Therefore we have:
+    \[
+    D_{KL}(\mathbb{P}_0 || \mathbb{P}_1) = n \cdot D_{KL}(N(\delta, 1) || N(-\delta, 1)) = n \cdot 2\delta^2 = 2n\delta^2
+    \]
+    \item Plugging the KL divergence into the Pinsker's inequality we have:
+    \[
+    \|\mathbb{P}_0 - \mathbb{P}_1\|_{TV} \le \sqrt{\frac{1}{2} D_{KL}(\mathbb{P}_0 || \mathbb{P}_1)} = \sqrt{\frac{1}{2} \cdot 2n\delta^2} = \sqrt{n}\delta
+    \]
+    \item Chossing $\delta \le \frac{1}{2\sqrt{n}}$ and plugging the bound from part 2 into Le Cam's inequality we have:
+    \begin{align*}
+        \inf_{\hat{\theta}} \sup_{\theta\in\{-\delta, +\delta\}} \mathbb{E}_{\theta} \left[ (\hat{\theta} - \theta)^2 \right]
+        &\ge \frac{(2\delta)^2}{4} \left( 1 - \|\mathbb{P}_0 - \mathbb{P}_1\|_{TV} \right) \\
+        &\ge \delta^2 \left( 1 - \sqrt{n}\delta \right) \\
+        &\ge \frac{1}{4n} \left( 1 - \sqrt{n} \cdot \frac{1}{2\sqrt{n}} \right) = \frac{1}{8n}
+    \end{align*}
+\end{enumerate}
+
+\newpage
+\section{Divergences and Distances between Probability Measures}
+\begin{enumerate}[label=(\alph*)]
+    \item \begin{enumerate}
+        \item Using the definiton of Hellinger distance we have:
+        \begin{align*}
+            H^2(P || Q
+            &= \frac{1}{2} \sum_x \left( \sqrt{P(x)} - \sqrt{Q(x)} \right)^2 \\
+            &= \frac{1}{2} \sum_x \left( P(x) + Q(x) - 2\sqrt{P(x) Q(x)} \right) \\
+            &= \frac{1}{2} \left( \sum_x P(x) + \sum_x Q(x) - 2 \sum_x \sqrt{P(x) Q(x)} \right) \\
+            &= 1 - \sum_x \sqrt{P(x) Q(x)}
+        \end{align*}
+        \item First we show the lower bound. Using the definition of TV distance we have:
+        \begin{align*}
+            \|P - Q\|_{TV}
+            &= \frac12 \sum_x |P(x) - Q(x)| \\
+            &= \frac12 \sum_x | \sqrt{P(x)} - \sqrt{Q(x)} | \cdot | \sqrt{P(x)} + \sqrt{Q(x)} | \\
+            &\geq \frac12 \sum_x \left( \sqrt{P(x)} - \sqrt{Q(x)} \right)^2 \qquad (a, b \ge 0\implies|a+b| \ge |a-b|) \\
+            &= H^2(P || Q)
+        \end{align*}
+        And to show upper bound we have:
+        \begin{align*}
+            \|P - Q\|_{TV}
+            &= \frac12 \sum_x |P(x) - Q(x)| \\
+            &= \frac12 \sum_x | \sqrt{P(x)} - \sqrt{Q(x)} | \cdot | \sqrt{P(x)} + \sqrt{Q(x)} | \\
+            &\leq \frac12 \left( \sum_x \left( \sqrt{P(x)} - \sqrt{Q(x)} \right)^2 \right)^{1/2} \cdot \left( \sum_x \left( \sqrt{P(x)} + \sqrt{Q(x)} \right)^2 \right)^{1/2} \\
+            &= \frac12 \left(2H^2(P||Q)\right)^{1/2} \cdot \left(2 + 2\sum_x \sqrt{P(x) Q(x)}\right)^{1/2} \\
+            &= H(P||Q)\left(1+\sum_x\sqrt{P(x) Q(x)}\right)^{1/2} \\
+            &\le H(P||Q)\left(1+\left[\sum_x\sqrt{P(x)}^2\right]^{1/2}\left[\sum_x\sqrt{Q(x)}^2\right]^{1/2}\right) \\
+            &= H(P||Q)\left(1+1\cdot1\right)^{1/2} = \sqrt{2} H(P||Q)
+        \end{align*}
+    \end{enumerate}
+    \item
+    \begin{enumerate}
+        \item We use the definitions and Cuashy-Schwarz inequality to write:
+        \begin{align*}
+            \|P-Q\|^2_{TV}
+            &= \frac14 \left(\sum_x |P(x) - Q(x)|\right)^2 \\
+            &= \frac14 \left(\sum_x |P(x) - Q(x)| \cdot \frac{\sqrt{Q(x)}}{\sqrt{Q(x)}} \right)^2 \\
+            &\leq \frac14 \left( \sum_x \frac{(P(x) - Q(x))^2}{Q(x)} \right)\cdot \left( \sum_x Q(x) \right) \\
+            &= \frac14 \left( \sum_x \frac{(P(x) - Q(x))^2}{Q(x)} \right) \cdot 1 \\
+            &= \frac14 \chi^2(P || Q)
+        \end{align*}
+        \item 
+    \end{enumerate}
+    \item 
+    \begin{enumerate}
+        \item The given inequality does not hold in general. For $u = 1/2 > 0$ we have:
+        \begin{align*}
+            \log(u) \approx -0.6931 \not\leq (u-1) - \frac{(u-1)^2}{2u} = -0.75
+        \end{align*}
+        \item 
+    \end{enumerate}
+\end{enumerate}
+
+\newpage
+\section{Le Cam’s Inequality}
+We start with the definition of TV distance:
+\begin{align*}
+    \|\mathbb{P} - \mathbb{Q}\|_{TV}
+    &= \frac12 \int |p(x) - q(x)| dx \\
+    &= \frac12 \int | \sqrt{p(x)} - \sqrt{q(x)} | \cdot | \sqrt{p(x)} + \sqrt{q(x)} | dx \\
+    &\leq \frac12 \left( \int \left( \sqrt{p(x)} - \sqrt{q(x)} \right)^2 dx \right)^{1/2} \cdot \left( \int \left( \sqrt{p(x)} + \sqrt{q(x)} \right)^2 dx \right)^{1/2} \\
+    &= \frac12 \left( 2 - 2 \int \sqrt{p(x) q(x)} dx \right)^{1/2} \cdot \left( 2 + 2 \int \sqrt{p(x) q(x)} dx \right)^{1/2} \\
+    &= \left( 1 - \int \sqrt{p(x) q(x)} dx \right)^{1/2} \cdot \left( 1 + \int \sqrt{p(x) q(x)} dx \right)^{1/2} \\
+\end{align*}
+From the definition of Hellinger distance we have:
+\[
+H^2(\mathbb{P} || \mathbb{Q}) = 2 - 2\int \sqrt{p(x) q(x)} dx \implies \int \sqrt{p(x) q(x)} dx = 1 - \frac{H^2(\mathbb{P} || \mathbb{Q})}{2}
+\]
+Thus plugging this into the previous equation we have:
+\begin{align*}
+    \|\mathbb{P} - \mathbb{Q}\|_{TV}
+    &\leq \left( \frac{H^2(\mathbb{P} || \mathbb{Q})}{2} \right)^{1/2} \cdot \left( 2 - \frac{H^2(\mathbb{P} || \mathbb{Q})}{2} \right)^{1/2} \\
+    &= H(\mathbb{P} || \mathbb{Q}) \cdot \left( 1 - \frac{H^2(\mathbb{P} || \mathbb{Q})}{4} \right)^{1/2} \\
+\end{align*}
+
+\newpage
+\section{Bounds for Gaussian location family}
+\begin{enumerate}[label=(\alph*)]
+    \item We consider $\Theta = \{0, 2\delta\}$ as our packing. Now for $\Phi(\cdot)$ using the two-point form of Le Cam's method we have:
+    \begin{align*}
+        \inf_{\hat{\theta}} \sup_{\theta \in \Theta} \mathbb{E}_{\theta} \left[ \Phi(\hat{\theta} - \theta) \right]
+        &\ge \frac{\Phi(\delta)}{2}\left(1 - \|\mathbb{P}_0 - \mathbb{P}_{2\delta}\|_{TV}\right)
+    \end{align*}
+    Calculating total variation distance is a little complex for this case, therefore we use an upper bound on this distance. From course notes we know:
+    \[
+    \|\mathbb{P}_0 -  \mathbb{P}_{2\delta}\|^2_{TV} \le \frac14 \left(\int \frac{p_{0}(x)^2}{p_{2\delta}(x)}dx - 1\right)
+    \]
+    Calculating this integral for two normal distributions we have:
+    \begin{align*}
+        \int \frac{p_{0}(x)^2}{p_{2\delta}(x)}dx
+        &= \int \frac{\left(\frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{x^2}{2\sigma^2}}\right)^2}{\frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{(x - 2\delta)^2}{2\sigma^2}}} dx \\
+        &= \int \frac{1}{\sqrt{2\pi}\sigma} \frac{e^{-\frac{x^2}{\sigma^2}}}{e^{-\frac{(x - 2\delta)^2}{2\sigma^2}}} dx \\
+        &= \int \frac{1}{\sqrt{2\pi}\sigma} e^{-\left(\frac{x^2}{\sigma^2} - \frac{(x - 2\delta)^2}{2\sigma^2}\right)} dx \\
+        &= \int \frac{1}{\sqrt{2\pi}\sigma} e^{-\left(\frac{x^2}{2\sigma^2} + \frac{2\delta x}{\sigma^2} - \frac{2\delta^2}{\sigma^2}\right)} dx \\
+        &= e^{\frac{4\delta^2}{\sigma^2}} \int \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{(x + 2\delta)^2}{2\sigma^2}} dx \\
+        &= e^{\frac{4\delta^2}{\sigma^2}} \cdot 1 \\
+        &= e^{\frac{4\delta^2}{\sigma^2}}
+    \end{align*}
+    This was for single sample, for $n$ i.i.d. samples one can simply show:
+    \begin{align*}
+        \int \frac{p_{0}^n(x)^2}{p^n_{2\delta}(x)}dx = \left(\int \frac{p_{0}(x)^2}{p_{2\delta}(x)}dx\right)^n
+        &= \left(e^{\frac{4\delta^2}{\sigma^2}}\right)^n = e^{\frac{4n\delta^2}{\sigma^2}}
+    \end{align*}
+    Thus for the TV distance we have:
+    \begin{align*}
+        \|\mathbb{P}_0 -  \mathbb{P}_{2\delta}\|_{TV}
+        &\le \frac12 \sqrt{e^{\frac{4n\delta^2}{\sigma^2}} - 1}
+    \end{align*}
+    Therefore we have:
+    \begin{align*}
+        \inf_{\hat{\theta}} \sup_{\theta \in \Theta} \mathbb{E}_{\theta} \left[ \Phi(\hat{\theta} - \theta) \right]
+        &\ge \frac{\Phi(\delta)}{2} \left(1 - \frac12 \sqrt{e^{\frac{4n\delta^2}{\sigma^2}} - 1}\right)
+    \end{align*}
+    This bound holds for any $\delta > 0$. Choosing $\delta = \frac{\sigma}{2\sqrt{n}}$ we have:
+    \begin{align*}
+        \inf_{\hat{\theta}} \sup_{\theta \in \Theta} \mathbb{E}_{\theta} \left[ \Phi(\hat{\theta} - \theta) \right]
+        &\ge \frac{\Phi\left(\frac{\sigma}{2\sqrt{n}}\right)}{2} \underbrace{\left(1 - \frac12 \sqrt{e - 1}\right)}_{\approx 0.345 \ge 1/3} \ge \frac{1}{6}\Phi\left(\frac{\sigma}{2\sqrt{n}}\right)
+    \end{align*}
+    Now for different error functions we have:
+    \[
+    \begin{cases}
+        \Phi(\cdot) = |\cdot| \implies \inf_{\hat{\theta}} \sup_{\theta \in \Theta} \mathbb{E}_{\theta} \left[ |\hat{\theta} - \theta| \right] \ge \frac{1}{12}\frac{\sigma}{\sqrt{n}} \\[.6em]
+        \Phi(\cdot) = (\cdot)^2 \implies \inf_{\hat{\theta}} \sup_{\theta \in \Theta} \mathbb{E}_{\theta} \left[ (\hat{\theta} - \theta)^2 \right] \ge \frac{1}{24}\frac{\sigma^2}{n} \\
+    \end{cases}
+    \]
+    \item Now using Pinsker's inequality and decomposibility of KL divergence we have:
+    \begin{align*}
+        \|\mathbb{P}_0 - \mathbb{P}_{2\delta}\|_{TV}
+        &\le \sqrt{\frac{1}{2} D_{KL}(\mathbb{P}_0 || \mathbb{P}_{2\delta})} \\
+        &= \sqrt{\frac{1}{2}\frac{(0 - 2\delta)^2}{2\sigma^2} \cdot n} = \sqrt{\frac{n\delta^2}{\sigma^2}}
+    \end{align*}
+    Plugging this into the Le Cam bound we have:
+    \begin{align*}
+        \inf_{\hat{\theta}} \sup_{\theta \in \Theta} \mathbb{E}_{\theta} \left[ \Phi(\hat{\theta} - \theta) \right]
+        &\ge \frac{\Phi(\delta)}{2} \left(1 - \sqrt{\frac{n\delta^2}{\sigma^2}}\right)
+    \end{align*}
+    This bound holds for any $\delta > 0$ such that $\sqrt{\frac{n\delta^2}{\sigma^2}} \le 1$. Choosing $\delta = \frac{\sigma}{2\sqrt{n}}$ we have:
+    \begin{align*}
+        \inf_{\hat{\theta}} \sup_{\theta \in \Theta} \mathbb{E}_{\theta} \left[ \Phi(\hat{\theta} - \theta) \right]
+        &\ge \frac{\Phi\left(\frac{\sigma}{2\sqrt{n}}\right)}{2} \left(1 - \frac{1}{2}\right) = \frac{1}{4}\Phi\left(\frac{\sigma}{2\sqrt{n}}\right)
+    \end{align*}
+    Now for different error functions we have:
+    \[
+    \begin{cases}
+        \Phi(\cdot) = |\cdot| \implies \inf_{\hat{\theta}} \sup_{\theta \in \Theta} \mathbb{E}_{\theta} \left[ |\hat{\theta} - \theta| \right] \ge \frac{1}{8}\frac{\sigma}{\sqrt{n}} \\[.6em] 
+        \Phi(\cdot) = (\cdot)^2 \implies \inf_{\hat{\theta}} \sup_{\theta \in \Theta} \mathbb{E}_{\theta} \left[ (\hat{\theta} - \theta)^2 \right] \ge \frac{1}{16}\frac{\sigma^2}{n} \\
+    \end{cases}
+    \]
+\end{enumerate}
+
+\newpage
+\section{Normal location model via Fano method}
+Using Fano's method we can construct a packing as $\Theta = \{0, 2\delta, -2\delta\}$. Now writing the Fano's inequality for $\Phi(\cdot) = (\cdot)^2$ we have:
+\begin{align*}
+    \inf_{\hat{\theta}} \sup_{\theta \in \Theta} \mathbb{E}_{\theta} \left[ (\hat{\theta} - \theta)^2 \right]
+    &\ge \delta^2 \left(1 - \frac{\frac{1}{|\Theta|^2} \sum_{i,j} D_{KL}(\mathbb{P}_{\theta_i} || \mathbb{P}_{\theta_j}) + \log 2}{\log |\Theta|}\right)
+\end{align*}
+For the KL divergences we have:
+\[
+\begin{cases}
+    \theta_i = \theta_j &\implies D_{KL}(\theta_i, \theta_j) = 0 \\
+    \theta_i = 0, \theta_j = \pm 2\delta &\implies D_{KL}(\theta_i, \theta_j) = \frac{(0 - (\pm 2\delta))^2}{2\sigma^2} \cdot n = \frac{2n\delta^2}{\sigma^2} \\
+    \theta_i = 2\delta, \theta_j = -2\delta &\implies D_{KL}(\theta_i, \theta_j) = \frac{(2\delta - (-2\delta))^2}{2\sigma^2} \cdot n = \frac{8n\delta^2}{\sigma^2} \\
+\end{cases}
+\]
+Thus for the average KL divergence term we have:
+\begin{align*}
+    \frac{1}{|\Theta|^2} \sum_{i,j} D_{KL}(\mathbb{P}_{\theta_i} || \mathbb{P}_{\theta_j})
+    &= \frac{1}{9} \left( 0 + 2 \cdot \frac{2n\delta^2}{\sigma^2} + 2 \cdot \frac{2n\delta^2}{\sigma^2} + 2\cdot\frac{8n\delta^2}{\sigma^2} \right) \\
+    &= \frac{8}{3}\frac{n\delta^2}{\sigma^2}
+\end{align*}
+Plugging this into the Fano's inequality we have:
+\begin{align*}
+    \inf_{\hat{\theta}} \sup_{\theta \in \Theta} \mathbb{E}_{\theta} \left[ (\hat{\theta} - \theta)^2 \right]
+    &\ge \delta^2 \left(1 - \frac{\frac{8}{3}\frac{n\delta^2}{\sigma^2} + \log 2}{\log 3}\right)
+\end{align*}
+This bound holds for any $\delta > 0$ such that $\frac{8}{3}\frac{n\delta^2}{\sigma^2} + \log 2 \le \log 3$. Choosing $\delta = \frac{\sigma}{2\sqrt{n}}$ we have:
+\begin{align*}
+    \inf_{\hat{\theta}} \sup_{\theta \in \Theta} \mathbb{E}_{\theta} \left[ (\hat{\theta} - \theta)^2 \right]
+    &\ge \frac{1}{4}\frac{\sigma^2}{n} \left(1 - \frac{\frac{8}{3} \cdot \frac{1}{4} + \log 2}{\log 3}\right) = \frac{1}{4}\frac{\sigma^2}{n} \underbrace{\left(1 - \frac{2/3 + \log 2}{\log 3}\right)}_{} \\
+\end{align*}
+
+\newpage
+\section{Minimax risk for sparse linear regression}
+
+\label{LastPage}
+\end{document}

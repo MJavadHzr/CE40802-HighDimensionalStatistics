@@ -1,0 +1,266 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{enumitem}
+% \usepackage{lastpage}
+
+% --- Custom Commands ---
+\newcommand{\studentname}{Javad Hezareh}
+\newcommand{\studentid}{404208723}
+\newcommand{\coursename}{High Dimensional Statistics}
+\newcommand{\hwnumber}{2}
+
+% --- Header & Footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textbf{Course:} \coursename}
+\rhead{\textbf{Homework \#\hwnumber}}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+
+
+
+% --- Title ---
+\title{
+    \vspace{-1.5cm}
+    \rule{\textwidth}{2pt}
+    \vspace{.6cm}
+    \textbf{\coursename}\\[2pt]
+    \textbf{Homework \hwnumber}\\[8pt]
+    \large{\studentname\ (\studentid)}\\[4pt]
+    \normalsize{Fall 2025 (1404)}\\[6pt]
+    % \rule{\textwidth}{}
+    \hrule
+}
+\date{}
+
+% \renewcommand{\theenumi}{(\alph{enumi})}
+
+% --- Document ---
+\begin{document}
+
+\maketitle
+\vspace{-1.75cm}
+\section{Properties of $\ell_q$-Ball}
+\begin{enumerate}[label=(\alph*)]
+    \item Consider a vector $\theta\in B_q(R_q)$ therefore for this vectore we know
+    \[
+    \sum_{j=1}^d |\theta_j|^q \le R_q.
+    \]
+    Now for a $t \in [0, 1]$ we have $|t\theta_j|^q = |t|^q |\theta_j|^q \le |\theta_j|^q$ as we know $|t|^q \le 1$. Therefore we have
+    \[
+    \sum_{j=1}^d |t\theta_j|^q \le \sum_{j=1}^d |\theta_j|^q \le R_q,
+    \]
+    which means that $t\theta \in B_q(R_q)$ and therefore the $\ell_q$-ball is a star-shaped set.
+    \item We know $\alpha > 1/q$ and as $q\in(0,1]$ we can say that $\alpha q > 1$. Now for a vector $\theta \in B_{w(\alpha)}(C)$ we have:
+    \[
+    |\theta|_{(j)} \le C j^{-\alpha} \implies |\theta|_{(j)}^q \le C^q j^{-\alpha q} \le C^q
+    \]
+    Therefore we have $\sum_{j=1}^d |\theta|_{(j)}^q \le d C^q$. 
+\end{enumerate}
+
+\newpage
+\section{Welch Bound}
+Using the provide hint we can subsititute the $\text{tr}(G) = n$ and $\text{rank}(G) \le m$ in the inequality as follows:
+\[
+\text{tr}(G)^2 \le \text{rank}(G) \cdot \text{tr}(G^2) \implies n^2 \le m \cdot \text{tr}(G^2) \implies \text{tr}(G^2) \ge \frac{n^2}{m}.
+\]
+Now for the $\text{tr}(G^2)$ we have:
+\begin{align*}
+    \text{tr}(G^2) &= \sum_{i=1}^n (G^2)_{ii} \\
+    &= \sum_{i=1}^n \left(\sum_{j=1}^n G_{ij}G_{ji}\right) \\
+    &= \sum_{i=1}^n \sum_{j=1}^n (G_{ij})^2 \\
+    &= \sum_{i=1}^n \sum_{j=1}^n \langle a_i, a_j \rangle^2 \\
+    &= \sum_{i=1}^n \langle a_i, a_i \rangle^2 + \sum_{i\neq j} \langle a_i, a_j \rangle^2 \\
+    &= \sum_{i=1}^n 1^2 + \sum_{i\neq j} \langle a_i, a_j \rangle^2 \\
+    &= n + \sum_{i\neq j} \langle a_i, a_j \rangle^2 \\
+    &\le n + \sum_{i\neq j} \mu(A)^2 \\
+    &= n + n(n-1) \mu(A)^2.
+\end{align*}
+Now by substituting this back in the previous inequality we have:
+\[
+\frac{n^2}{m} \le n + n(n-1) \mu(A)^2 \implies \frac{n}{m} - 1 \le (n-1) \mu(A)^2 \implies \mu(A)^2 \ge \frac{n - m}{m(n-1)}.
+\]
+
+\newpage
+\section{Mutual Coherence}
+\begin{enumerate}[label=(\alph*)]
+    \item For the upper bound we can use the Cauchy-Schwarz inequality as follows:
+    \[
+    |\psi_i^T \phi_j| \le \|\psi_i\|_2 \|\phi_j\|_2 = 1 \cdot 1 = 1 \implies \max_{1\le i,j \le n} |\psi_i^T \phi_j| = \mu(\mathbf{\psi}, \mathbf{\phi})\le 1.
+    \]
+    For the lower bound we can use the fact that transforming with an orthogonal matrix does not change the inner product. In other words for a vecotr $v \in \mathbb{R}^n$ we have:
+    \[
+    \| \psi^T v \|_2^2 = ( \psi^T v )^T ( \psi^T v ) = v^T \psi \psi^T v = v^T I v = \|v\|_2^2.
+    \]
+    Now let's considre $v = \phi_j$ for some $j \in \{1, 2, \ldots, n\}$. Therefore we have:
+    \[
+    \| \phi_j \|_2^2 = \| \psi^T \phi_j \|_2^2 = \sum_{i=1}^n \left(\psi_i^T \phi_j\right)^2 \le \sum_{i=1}^n \mu(\psi, \phi)^2 = n \mu(\psi, \phi)^2.
+    \]
+    Therefore we have $1 \le n \mu(\psi, \phi)^2 \implies \mu(\psi, \phi) \ge \frac{1}{\sqrt{n}}$. Thus we've shown that:
+    \[\frac{1}{\sqrt{n}} \le \mu(\psi, \phi) \le 1.\]
+    \item Let's set $\mu = \mu(\psi, \phi)$ for simplicity. As we know $\psi = I$ we have:
+    \[
+    \max_{i, j} | \psi_i^T\phi_j | = \max_{i, j}| \phi_{ij} |
+    \]
+    Therefore to construct a bound on the $\mu$ we need to bound the $\max |\phi_{ij}|$. Let's define $Z_{ij} = \sqrt{n}\phi_{ij}$, we have:
+    \[
+    \phi_{ij} \sim \mathcal(0, \frac{1}{n}) \implies Z_{ij} = \sqrt{n}\phi_{ij} \sim \mathcal{N}(0, 1).
+    \]
+    Now for the $mu$ we have:
+    \begin{align*}
+        \mathbb{P}\left(\mu > f(n) \right) &= \mathbb{P}\left(\max_{i,j} |\phi_{ij}| > f(n) \right) \\
+        &= \mathbb{P}\left(\max_{i,j} |Z_{ij}| > \sqrt{n} f(n) \right) \\
+        &\le \sum_{i,j} \mathbb{P}\left( |Z_{ij}| > \sqrt{n} f(n) \right) \quad \text{(by union bound)} \\
+        &= n^2 \mathbb{P}\left( |Z| > \sqrt{n} f(n) \right) \\
+        &\le n^2 2 \exp\left(-\frac{n f(n)^2}{2}\right) \quad \text{(by Gaussian tail bound)} \\
+        &= 2 \exp\left(2 \log n - \frac{n f(n)^2}{2}\right).
+    \end{align*}
+    We need this bound to go to zero as $n$ grows, therefore we need:
+    \[2 \log n - \frac{n f(n)^2}{2} \to -\infty \implies f(n) \ge \sqrt{\frac{4 \log n}{n}}.\]
+    Therefore we can set $f(n) = c\sqrt{\frac{\log n}{n}}$ for some constant $c > 2$ so that with high probability we would have $\mu(\psi, \phi) \le c\sqrt{\frac{\log n}{n}}$.
+    \item Same as Problem 2
+\end{enumerate}
+
+\newpage
+\section{Relationship between RIC and Incoherence}
+\begin{enumerate}[label=(\alph*)]
+    \item From the definition for $\delta_2(A)$ we have:
+    \begin{align*}
+        \delta_2(A) &= \max_{S \subset \{1, 2, \ldots, d\}, |S| \le 2} \| A_S^T A_S - I_2 \|_{op} \\
+        &= \max_{i\neq j} \| A_{\{i,j\}}^T A_{\{i,j\}} - I_2 \|_{op} \\
+        &= \max_{i\neq j} \left\| \begin{bmatrix}
+        1 & \langle a_i, a_j \rangle \\
+        \langle a_j, a_i \rangle & 1
+        \end{bmatrix} - I_2 \right\|_{op} \\
+        &= \max_{i\neq j} \left\| \begin{bmatrix}
+        0 & \langle a_i, a_j \rangle \\
+        \langle a_j, a_i \rangle & 0
+        \end{bmatrix} \right\|_{op} \\
+        % &= \max_{i\neq j} |\langle a_i, a_j \rangle| = \mu(A).
+    \end{align*}
+    Now the operation norm of the matrix is equal to its largest eigenvalue in absolute value. The eigenvalues of the above matrix are $\pm |\langle a_i, a_j \rangle|$. Therefore we have:
+    \[
+    \delta_2(A) = \max_{i\ne j} |\langle a_i, a_j \rangle| = \mu(A)
+    \]
+    \item 
+    Let $S \subset [n]$ be a subset of indices with cardinality $|S| = k$. Consider the Gram matrix of the subset of columns, $G_S = A_S^\top A_S$. The restricted isometry constant $\delta_k$ is defined by the deviation of eigenvalues of $G_S$ from 1. Equivalently, it is the spectral radius (largest absolute eigenvalue) of the matrix $M_S = A_S^\top A_S - I_k$.
+    The entries of the $k \times k$ matrix $M_S$ are given by:
+    \[
+    (M_S)_{ij} = 
+    \begin{cases} 
+    \langle a_i, a_j \rangle & \text{if } i \neq j \\
+    0 & \text{if } i = j
+    \end{cases}
+    \]
+    where $i, j \in S$. According to the Gershgorin Circle Theorem, every eigenvalue $\lambda$ of $M_S$ lies in at least one disc centered at the diagonal entries (which are 0) with a radius equal to the sum of the absolute values of the off-diagonal entries in that row. 
+    Therefore, for any eigenvalue $\lambda$ of $M_S$:
+    \[
+    |\lambda| \leq \max_{i \in S} \sum_{j \in S, j \neq i} |(M_S)_{ij}| = \max_{i \in S} \sum_{j \in S, j \neq i} |\langle a_i, a_j \rangle|.
+    \]
+    Since $\delta_k = \sup_{S:|S|=k} \|M_S\|_2$ is the maximum spectral radius over all such sets, we have:
+    \[
+        \delta_k \leq \max_{S:|S|=k} \left( \max_{i \in S} \sum_{j \in S, j \neq i} |\langle a_i, a_j \rangle| \right).
+    \]
+    The inner sum in inequality, $\sum_{j \in S, j \neq i} |\langle a_i, a_j \rangle|$, represents the sum of absolute correlations between a specific $a_i$ and $k-1$ other distinct vectors in $S$.
+    Recalling the definition of the Babel function (or 1-coherence parameter) $\mu_1(m)$:
+    \[
+    \mu_1(m) = \max_{i \notin \Lambda, |\Lambda|=m} \sum_{j \in \Lambda} |\langle a_i, a_j \rangle|.
+    \]
+    Since the sum in our expression involves exactly $k-1$ other vectors, it is bounded by definition by $\mu_1(k-1)$. Therefore:
+    \[
+    \delta_k \leq \mu_1(k-1).
+    \]
+    Consider the definition of $\mu_1(k-1)$ again:
+    \[
+    \mu_1(k-1) = \max_{i, \Lambda} \sum_{j \in \Lambda} |\langle a_i, a_j \rangle|, \quad \text{where } |\Lambda| = k-1.
+    \]
+    We know that the pairwise incoherence parameter $\mu$ is the maximum absolute inner product between any two distinct columns: $\mu = \max_{u \neq v} |\langle a_u, a_v \rangle|$. Thus, for every term in the sum, we have $|\langle a_i, a_j \rangle| \leq \mu$.
+    Substituting this upper bound into the sum:
+    \[
+    \sum_{j \in \Lambda} |\langle a_i, a_j \rangle| \leq \sum_{j \in \Lambda} \mu = (k-1)\mu.
+    \]
+    Since this holds for the maximum sum, we conclude:
+    \[
+    \mu_1(k-1) \leq (k-1)\mu.
+    \]
+\end{enumerate}
+
+\newpage
+
+\section{Restricted Isometry Property}
+\begin{enumerate}[label=(\alph*)]
+    \item  We first show that for a fixed support set $T$ with $|T|=s$, the random matrix $A_T$ preserves the norm of vectors with high probability. Let $x \in \mathbb{R}^s$ be a unit vector ($||x||_2 = 1$). Since the entries of $A$ are i.i.d. $\mathcal{N}(0, 1/m)$, the vector $Ax$ follows a multivariate Gaussian distribution, and $m||Ax||_2^2$ follows a Chi-squared distribution with $m$ degrees of freedom ($\chi^2_m$).
+
+    Using concentration inequalities for Chi-squared variables (or sub-exponential variables), for any $t > 0$, we have:
+    \[
+    \mathbb{P}\left( \left| ||Ax||_2^2 - 1 \right| \ge t \right) \le 2 \exp(-c_0 m t^2)
+    \]
+    Here we first select our vector $x$ and then observe the randomness over the matrix $A$. However, we want this bound for the $x$ that maximizes the deviation. This makes the vectore $x$ dependent on $A$, and we can not simply use this bound for all $x$. We need to use a covering argument to uniformize this bound over all $x$ in the unit sphere.
+    Let $\mathcal{N}_\epsilon$ be an $\epsilon$-net of the unit sphere $S^{s-1}$. From standard covering arguments, we know that:
+    \[
+    |\mathcal{N}_\epsilon| \le \left(1 + \frac{2}{\epsilon}\right)^s
+    \]
+    Using the union bound over all $x \in \mathcal{N}_\epsilon$ and setting $t = \delta/2$, we can write:
+    \[
+    \mathbb{P}\left( \sup_{x \in \mathcal{N}_\epsilon} \left| ||Ax||_2^2 - 1 \right| \ge \delta/2 \right) \le \sum_{x \in \mathcal{N}_\epsilon} \mathbb{P}\left( \left| ||Ax||_2^2 - 1 \right| \ge \delta/2 \right)
+    \]
+    \[
+    \le \left(1 + \frac{2}{\epsilon}\right)^s 2 \exp(-c_0 m (\delta/2)^2)
+    \]
+    By choosing $\epsilon$ appropriately (e.g., $\epsilon < c \delta$), the norm preservation on the net implies norm preservation on the entire sphere with constant $\delta$. Thus, for a fixed support $T$:
+    \[
+    \mathbb{P}(\delta_T > \delta) \le 2 \exp\left( s \ln(C/\delta) - c' m \delta^2 \right)
+    \]
+    Now we need to ensure this holds for all possible support sets of size $s$. There are $\binom{n}{s}$ such subspaces. Using the standard bound for the binomial coefficient $\binom{n}{s} \le (en/s)^s$, we apply the union bound again:
+    \[
+    \mathbb{P}(\delta_s > \delta) = \mathbb{P}\left( \max_{|T|=s} \delta_T > \delta \right)
+    \]
+    \[
+    \le \sum_{|T|=s} \mathbb{P}(\delta_T > \delta)
+    \]
+    \[
+    \le \left(\frac{en}{s}\right)^s 2 \exp(s \ln(C/\delta) - c' m \delta^2)
+    \]
+    \[
+    = 2 \exp\left( s \ln\left(\frac{en}{s}\right) + s \ln(C/\delta) - c' m \delta^2 \right)
+    \]
+    To have this probability bounded by $2 \exp(-c_2 m)$, we require the exponent to be dominated by the negative $m$ term. Specifically, we need:
+    \[
+    c' m \delta^2 \ge s \ln\left(\frac{en}{s}\right) + s \ln(C/\delta) + c_2 m
+    \]
+    Ignoring constants and lower order terms, this inequality holds provided that:
+    \[
+    m \ge c_1 \delta^{-2} s \log\left(\frac{en}{s}\right).
+    \]
+    \item We discuss the optimality of this bound. The known lower bound for any matrix satisfying the RIP of order $s$ is $m \ge C s \log(n/s)$. Since our derived sufficient condition matches this lower bound (up to constant factors), Gaussian matrices are order-optimal for compressed sensing.
+    The logarithmic factor $\log(n/s)$ has a specific geometric interpretation regarding the set of sparse vectors.
+    \begin{enumerate}
+        \item \textbf{Union of Subspaces:} The set of $s$-sparse vectors is not a linear subspace, but rather a union of $\binom{n}{s}$ subspaces.
+        \item \textbf{Encoding Complexity:} To identify an $s$-sparse vector, one must identify both its values (requiring $s$ degrees of freedom) and its support. The number of bits required to encode the support location is approximately $\log_2 \binom{n}{s} \approx s \log(n/s)$.
+    \end{enumerate}
+\end{enumerate}
+
+\newpage
+\section{Covering and Packing Numbers}
+\begin{enumerate}[label=(\alph*)]
+    \item We know $N$ is a maximal $\epsilon$-seperated set, therefore there is no element in $K$ that we can add to $N$ such that the set remains $\epsilon$-seperated. This means that for every $x \in K$ there exists at least one $z \in N$ such that $d(x, z) \le \epsilon$, otherwise we could add $x$ to $N$ and contradict the maximality of $N$. Therefore $N$ is also an $\epsilon$-net of $K$.
+    \item Let's say $M$ is a maximal $\epsilon$-seperated set of $K$, from part (a) we know $M$ is also an $\epsilon$-net of $K$. From the definiton we know $N(K, d, \epsilon)$ is the size of the smallest $\epsilon$-net of $K$, therefore we have:
+    \[N(K, d, \epsilon) \le |M| = P(K, d, \epsilon).\]
+    To show the lower bound, we show there exist a one-to-one mapping from $S$ to $C$ where $S$ is a maximal $2\epsilon$-seperated set of $K$ and $C$ is a minimal $\epsilon$-net of $K$. For every element $x \in S$ we can find a $z\in C$ such that $d(x, z) \le \epsilon$ as we know $C$ is an $\epsilon$-net of $K$. Now let's assume two different elements $x_1, x_2 \in S$ map to the same $z \in C$. Therefore using the triangle inequality we have:
+    \[
+    d(x_1, x_2) \le d(x_1, z) + d(z, x_2) \le \epsilon + \epsilon = 2\epsilon,
+    \]
+    which contradicts the fact that $S$ is a $2\epsilon$-seperated set. Therefore every element in $S$ maps to a different element in $C$ and we have $|S| \le |C|$ or equivalently $P(K, d, 2\epsilon) \le N(K, d, \epsilon)$. Thus we've shown:
+    \[P(K, d, 2\epsilon) \le N(K, d, \epsilon) \le P(K, d, \epsilon).\]
+    \item To show the lower bound, we show the constructed set with $k = C(K, d, \epsilon)$ is an $\epsilon$-net of $K$. Letting $C(K, d, \epsilon) = k$ means we have access to a set $Z = \{z_1, \ldots, z_{2^k}\}$ elements that can be used to specify elements in $K$ with $\epsilon$-accuracy. In other words for every $x \in K$ there exists a $z \in Z$ such that $d(x, z) \le \epsilon$. Therefore $Z$ is an $\epsilon$-net of $K$ and from the definition we have:
+    \[N(K, d, \epsilon) \le |Z| = 2^{C(K, d, \epsilon)} \implies \log_2 N(K, d, \epsilon) \le C(K, d, \epsilon).\]
+    To show the upper bound, we set $M$ to be the minimal $\epsilon/2$-net of $K$, therefore for each $x \in K$ there exists a $z \in M$ such that $d(x, z) \le \epsilon/2$. Therefore we can specify elements in $K$ with $\epsilon$-accuracy by specifying the closest element in $M$ to that element. From the definition we know $N(K, d, \epsilon/2) = |M|$, therefore we can specify elements in $K$ with $\epsilon$-accuracy using $\lceil \log_2 N(K, d, \epsilon/2) \rceil$ bits. Thus we have:
+    \[C(K, d, \epsilon) \le \lceil \log_2 N(K, d, \epsilon/2) \rceil.\]
+\end{enumerate}
+
+\label{LastPage}
+\end{document}
